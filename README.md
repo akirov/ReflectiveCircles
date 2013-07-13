@@ -10,10 +10,9 @@ Build
 -----
 To compile under any OS you need Qt SDK installed. Go to "ReflectiveCircles" dir
 and launch :
-> qmake
-It will create Makefile-s.
-Then launch :
-> make
+`qmake`
+It will create Makefile-s. Then launch :
+`make`
 If everything is OK this will produce a binary called circles(.exe) in the
 "release" subdir. Tested on 32-bit Windows XP with Qt 4.6 SDK v2009.05 + MinGW.
 
