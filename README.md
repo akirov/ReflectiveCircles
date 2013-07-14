@@ -1,9 +1,9 @@
 Reflective Circles
 ==================
 
-This is a simple 2D ray-tracer with an interactive GUI, which tries to find
-all possible light paths from one point to another through a set of reflective
-circles.
+This is a simple 2D ray-tracer with an interactive GUI, written in C++, which
+tries to find all possible light paths from one point to another through a set
+of reflective circles.
 
 
 Build
