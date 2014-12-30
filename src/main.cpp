@@ -2,7 +2,7 @@
  * Copyright: Assen Kirov                                                     *
  ******************************************************************************/
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "ui.h"
 
 

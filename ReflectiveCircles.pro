@@ -17,5 +17,7 @@ HEADERS += src/ui.h \
 
 #FORMS  += src/ReflectiveCircles.ui
 
-Release:DESTDIR = release
-Debug:DESTDIR = debug
+release:DESTDIR = release
+debug:DESTDIR = debug
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
