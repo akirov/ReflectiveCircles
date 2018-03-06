@@ -14,7 +14,7 @@ and launch :
 It will create Makefile-s. Then launch :
 `make`
 If everything is OK this will produce a binary called circles(.exe) in the
-"release" subdir. Tested on 32-bit Windows XP with Qt 4.6 SDK v2009.05 + MinGW.
+"bin/release" subdir.
 
 
 Usage

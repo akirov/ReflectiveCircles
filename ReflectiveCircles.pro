@@ -1,5 +1,7 @@
 
+#CONFIG += debug
 CONFIG += release
+CONFIG -= debug_and_release debug_and_release_target
 
 TARGET = circles
 
@@ -17,7 +19,24 @@ HEADERS += src/ui.h \
 
 #FORMS  += src/ReflectiveCircles.ui
 
-release:DESTDIR = release
-debug:DESTDIR = debug
+
+CONFIG(release, debug|release){
+    DESTDIR = ./bin/release
+    OBJECTS_DIR = ./build
+    MOC_DIR = ./build
+}
+
+CONFIG(debug, debug|release){
+    DESTDIR = ./bin/debug
+    OBJECTS_DIR = ./build
+    MOC_DIR = ./build
+}
+
+#release:DESTDIR = ./bin/release
+#debug:DESTDIR = ./bin/debug
+##DESTDIR = ./bin
+#OBJECTS_DIR = ./build
+#MOC_DIR = ./build
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

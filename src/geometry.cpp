@@ -233,7 +233,7 @@ void Ray::Draw(QPainter *painter) const
     if ( trace.size() == 0 )
         return;
 
-    painter->setPen(QPen(Qt::yellow, 1, Qt::SolidLine));
+    painter->setPen(QPen(Qt::darkYellow, 1, Qt::SolidLine));
 
     unsigned int i;
     for ( i=1; i<trace.size(); ++i )
