@@ -591,11 +591,11 @@ void RenderingFrame::Render()
 
         int K = mUI->GetK();
 
-        if ( K == 1 )
+        if ( K == 0 )
         {
             Ray r( *mA, *mB );  // Ray r( *mA, Vector(*mA, *mB) );
     
-            if ( RayTrace(&r, mB, K-1) )
+            if ( RayTrace(&r, mB, K) )
             {
                 mRays.push_back(r);
             }
@@ -620,7 +620,7 @@ void RenderingFrame::Render()
                 continue;
             Ray r( *mA, Point(x, y) );
 
-            if ( RayTrace(&r, mB, K-1) )
+            if ( RayTrace(&r, mB, K) )
                 mRays.push_back(r);
         }
 
@@ -683,7 +683,7 @@ void RenderingFrame::Render()
                     float angle = 2.0f * M_PI * i / MAX_NUM_RAYS;
                     Ray r( *mA, Vector(cos(angle), sin(angle)) );
 #endif // 0
-                    if ( RayTrace(&r, target, K-1) )
+                    if ( RayTrace(&r, target, K) )
                         mRays.push_back(r);
                 }
 

@@ -69,8 +69,8 @@ void ReflectiveCirclesUI::SetupUi()
     mKSpinBox = new QSpinBox(this);
     mKSpinBox->setObjectName(QString::fromUtf8("mKSpinBox"));
     mKSpinBox->setGeometry(QRect(20, 200, 51, 21));
-    mKSpinBox->setMinimum(1);
-    mKSpinBox->setValue(1);
+    mKSpinBox->setMinimum(0);
+    mKSpinBox->setValue(0);
 
     mKLabel = new QLabel(mCentralWidget);
     mKLabel->setObjectName(QString::fromUtf8("mKLabel"));

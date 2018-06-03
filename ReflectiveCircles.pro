@@ -1,6 +1,6 @@
 
-#CONFIG += debug
-CONFIG += release
+##CONFIG += debug
+#CONFIG += release
 CONFIG -= debug_and_release debug_and_release_target
 
 TARGET = circles
@@ -22,21 +22,18 @@ HEADERS += src/ui.h \
 
 CONFIG(release, debug|release){
     DESTDIR = ./bin/release
-    OBJECTS_DIR = ./build
-    MOC_DIR = ./build
+    OBJECTS_DIR = ./build/release
+    MOC_DIR = ./build/release
 }
 
 CONFIG(debug, debug|release){
     DESTDIR = ./bin/debug
-    OBJECTS_DIR = ./build
-    MOC_DIR = ./build
+    OBJECTS_DIR = ./build/debug
+    MOC_DIR = ./build/debug
 }
 
 #release:DESTDIR = ./bin/release
 #debug:DESTDIR = ./bin/debug
-##DESTDIR = ./bin
-#OBJECTS_DIR = ./build
-#MOC_DIR = ./build
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
