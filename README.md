@@ -36,15 +36,15 @@ you may get different solutions.
 
 ToDo
 ----
-- don't calculate the distance twice - pass it from intersect() to reflect()
-- start tracing in a new thread
+- start tracing in new threads
 - add "Stop" button to set mStopRendering flag
+- don't calculate the distance twice - pass it from intersect() to reflect()
 - don't use exceptions during the calculation
 - use smart pointers for the figures?
 - make MAX_NUM_RAYS configurable
 - option to delete figures
 - cast rays only to the figures
-- optimize the closest rays to hit point B
+- optimize the closest rays to hit point B?
 - use the GPU hardware (OpenGL, OpenCL)
 
 
