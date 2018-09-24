@@ -19,7 +19,13 @@ extern const float EPSILON;
 extern const float INF_DIST;
 
 
-struct Ray;
+inline bool areEqual( const float a, const float b )
+{
+    return ( fabs(a-b) < ((fabs(a) + fabs(b) + 1.0f)*EPSILON) );
+}
+
+
+class Ray;
 
 
 /****************************** Figure interface ******************************/
@@ -69,7 +75,7 @@ struct Point : public Figure
 
 inline bool operator==(const Point& lhs, const Point& rhs)
 {
-    return ( (fabs(lhs.x-rhs.x) < EPSILON) && (fabs(lhs.y-rhs.y) < EPSILON) );
+    return ( areEqual(lhs.x, rhs.x) && areEqual(lhs.y, rhs.y) );
 }
 
 
@@ -95,6 +101,7 @@ struct Circle : public Figure
 
     Point C;
     float  R;
+    // Add color?
 };
 
 

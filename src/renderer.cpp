@@ -582,9 +582,11 @@ void RenderingFrame::Render()
 
     Circle* target=NULL;
 
+#ifdef DEBUG
     try
+#endif // DEBUG
     {
-        Locker renderLock(mRenderingInProgress);
+        Locker renderLock(mRenderingInProgress);  // TODO: remove this
 
         mStopRendering = false;
         mRays.clear();  // Delete the previous solutions.
@@ -683,7 +685,7 @@ void RenderingFrame::Render()
                     float angle = 2.0f * M_PI * i / MAX_NUM_RAYS;
                     Ray r( *mA, Vector(cos(angle), sin(angle)) );
 #endif // 0
-                    if ( RayTrace(&r, target, K) )
+                    if ( RayTrace(&r, target, K) )  // TODO Do calculations in a pool of threads?
                         mRays.push_back(r);
                 }
 
@@ -709,6 +711,7 @@ void RenderingFrame::Render()
 
         update();
     }
+#ifdef DEBUG
     catch(std::runtime_error& e)
     {
         QMessageBox::warning(mUI, "ERROR", e.what());
@@ -717,6 +720,7 @@ void RenderingFrame::Render()
     {
         QMessageBox::warning(mUI, "ERROR", "An exception occured");
     }
+#endif // DEBUG
 
     if ( NULL != target )
         DelFigure(target);
