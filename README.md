@@ -38,14 +38,14 @@ ToDo
 ----
 - start tracing in new threads
 - add "Stop" button to set mStopRendering flag
-- don't calculate the distance twice - pass it from intersect() to reflect()
-- don't use exceptions during the calculation
-- use smart pointers for the figures?
+- optimize: don't calculate the distance twice - pass it from intersect() to reflect()...
 - make MAX_NUM_RAYS configurable
-- option to delete figures
-- cast rays only to the figures
-- optimize the closest rays to hit point B?
+- cast rays only to the figures, take clipping into account
+- replace dynamic_casts with something better
+- UI control to delete figures?
+- QML GUI?
 - use the GPU hardware (OpenGL, OpenCL)
+- optimize the closest rays to hit point B? we can start from B...
 
 
 Screenshots

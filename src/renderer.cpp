@@ -406,7 +406,7 @@ void RenderingFrame::DelFigure(Figure* fig)
     if ( ci != mScene.end() )
         mScene.erase(ci);
     else
-        ;  // throw or display an error?
+        QMessageBox::warning(mUI, "ERROR", "Figure not found in DelFigure()");  // or throw?
 
     delete fig;
 
@@ -580,14 +580,14 @@ void RenderingFrame::Render()
     if ( ! CheckInput() )  // Just in case.
         return;
 
+    // TODO: Parse the scene and determine visible surfaces (from point A) then cast rays only to them?
+
     Circle* target=NULL;
 
 #ifdef DEBUG
     try
 #endif // DEBUG
     {
-        Locker renderLock(mRenderingInProgress);  // TODO: remove this
-
         mStopRendering = false;
         mRays.clear();  // Delete the previous solutions.
 

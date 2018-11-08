@@ -51,6 +51,8 @@ struct Figure
 
 /*********************************** Point ************************************/
 
+/* A point is described with a radius (or position) vector, different from the
+ * free vector below. We don't want to add points... */
 struct Point : public Figure
 {
     Point( float x_, float y_ ) : x(x_), y(y_) {}
@@ -113,11 +115,12 @@ inline float Module( float x, float y )
 }
 
 
+/* This class describes a free (or direction) vector. We don't want to draw it. */
 class Vector
 {
   public:
     explicit Vector( float x_, float y_ ) : x(x_), y(y_) {}
-    explicit Vector( const Point& p ) : x(p.x), y(p.y) {}  // Radius-vector.
+    explicit Vector( const Point& p ) : x(p.x), y(p.y) {}  // From a radius-vector.
     explicit Vector( const Point& pa, const Point& pb) : x(pb.x - pa.x), y(pb.y - pa.y) {}  // From point A to B.
     Vector( const Vector& other ) : x(other.x), y(other.y) {}  // As the default.
     ~Vector() {}

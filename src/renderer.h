@@ -27,39 +27,6 @@ extern const float INC_TARGET_SIZE;
 extern const unsigned long MAX_NUM_RAYS;
 
 
-/******************************* Locking class ********************************/
-
-class Locker
-{
-  public:
-    explicit Locker( bool& flag ) :
-            mFlag(flag)
-    {
-        if ( mFlag )
-            throw std::runtime_error("Rendering is in progress");
-
-        mFlag = true;  // "Lock".
-    }
-
-    ~Locker()
-    {
-        mFlag = false;  // "Unlock".
-    }
-
-  private:
-    Locker( const Locker& );  // Disable copying.
-    Locker& operator=( const Locker& );  // Disable assignment.
-
-    //  Disable creation on the heap by making these private
-    void *operator new( size_t ); // throw() { return 0; }
-    void operator delete( void * ); // {}
-    void *operator new[]( size_t );
-    void operator delete[]( void * );
-
-    bool& mFlag;
-};
-
-
 /******************************* RenderingFrame *******************************/
 
 class ReflectiveCirclesUI;
@@ -104,7 +71,7 @@ class RenderingFrame : public QFrame
 
     Point* mA;
     Point* mB;
-    std::vector<Figure*> mScene;
+    std::vector<Figure*> mScene;  // Or a volume tree?
     std::vector<Ray> mRays;
 };
 
