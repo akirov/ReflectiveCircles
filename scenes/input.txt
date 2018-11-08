@@ -1,15 +1,15 @@
 # Chaos2 input file
 # Lines beginning with '#' are ignored (comments).
 
-# Enter X and Y coordinates of the point A as two real numbers divided by spaces
-# after the "A=" marker
+# Enter X and Y coordinates of the source point A after the "A=" marker, as two
+# real numbers divided by one or more spaces
 A= 100.0  20.5
 
-# Enter X and Y coordinates of the point B as two real numbers divided by spaces
-# after the "B=" marker
+# Enter X and Y coordinates of the destination point B after the "B=" marker,
+# as two real numbers divided by one or more spaces
 B=500.0  200.75
 
-# Enter the parameters of each circle on a row between "CirclesBegin" and 
+# Enter the parameters of each circle, one per row, between "CirclesBegin" and 
 # "CirclesEnd" markers, as 3 real numbers divided by spaces, representing the
 # coordinates of the center and the radius in this order:
 # Cx    Cy     R
@@ -17,8 +17,8 @@ CirclesBegin
  100.0  200.0  50.
 CirclesEnd
 
-# Enter K, between 1 and (number of circles + 1)
-K=2
+# Enter number of reflections K, between 1 and (number of circles)
+K=1
 
 # Automatic scene scalling to fit the display.
 # Must be "true" to enable it, otherwise it is disabled.

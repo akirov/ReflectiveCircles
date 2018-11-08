@@ -12,20 +12,21 @@ To compile under any OS you need Qt SDK installed. Go to "ReflectiveCircles" dir
 and launch :
 `qmake "CONFIG+=debug"` or `qmake "CONFIG+=release"`
 It will create Makefile-s. Then launch :
-`make` or `mingw32-make`
+`make`, `mingw32-make`, or whatever your make command is.
 If everything is OK this will produce a binary called circles(.exe) in the
-"bin" subdir.
+corresponding `bin` sub-folder.
 
 
 Usage
 -----
-Just start the binary from the release dir. It will open a GUI. There you
-can set up a scene with circles and points using the mouse, piking the drawing
-mode first from the left. You can set the number of reflections using the 
-"Reflections" spin box. Or you can load a scene from the "File" menu - an
-example scene file "input.txt" is provided in the "scenes" dir. You can also
-save the scene in a file using "Save" from the "File" menu. Start ray tracing
-with the "Find Path" button. "Reset" button clears the scene.
+Just start the binary from `bin` sub-folder. It will open a GUI. There you
+can set up a scene with source point A, destination B and several circles,
+using the mouse and piking the drawing mode first from the left.
+You can set the number of reflections using the "Reflections" spin box.
+You can also load a scene from the "File" menu - an example scene file
+"input.txt" is provided in the "scenes" dir. You can save the scene in a file
+using "Save" from the "File" menu. Start ray tracing with the "Find Path"
+button. "Reset" button clears the scene.
 
 Note: The task is solved exactly only in the simplest case (no reflections). In
 the other cases it is solved approximately, casting random rays in the scene,
