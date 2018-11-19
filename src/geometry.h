@@ -101,8 +101,8 @@ struct Circle : public Figure
     bool Intersect( const Ray* ray, float* distance ) const;
     void Reflect( Ray* ray ) const;
 
-    Point C;
-    float  R;
+    Point C;  // Center
+    float  R;  // Radius
     // Add color?
 };
 
@@ -218,7 +218,9 @@ inline const Vector operator *( float c, Vector rhs )
 class Ray
 {
   public:
-    Ray ( Point s, Vector d ) : src(s), dir(d), onFig(NULL), trace()
+    /* Default values are only to satisfy Qt's requirement for signal arguments
+     * to have default constructor! */
+    Ray ( Point s=Point(0,0), Vector d=Vector(1,0) ) : src(s), dir(d), onFig(NULL), trace()
     {
         if ( dir.Norm() < EPSILON )
             throw std::runtime_error("Ray with no direction!");

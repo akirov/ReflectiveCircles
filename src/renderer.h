@@ -14,6 +14,7 @@
 #else
     #include <QtGui>
 #endif  // QT_VERSION
+#include <QThread>
 
 #include "geometry.h"
 
@@ -24,12 +25,13 @@ namespace circles
 extern const float MIN_TARGET_SIZE;
 extern const float MAX_TARGET_SIZE;
 extern const float INC_TARGET_SIZE;
-extern const unsigned long MAX_NUM_RAYS;
+extern unsigned long MAX_NUM_RAYS;
 
 
 /******************************* RenderingFrame *******************************/
 
 class ReflectiveCirclesUI;
+class RenderingThread;
 
 class RenderingFrame : public QFrame
 {
@@ -47,13 +49,15 @@ class RenderingFrame : public QFrame
     void AddFugure(Figure* fig) { mScene.push_back(fig); }
     void DelFigure(Figure* fig);
     bool RenderingInProgress() const { return mRenderingInProgress; }
+    void StopRendering();
+
+  public slots:
+    void addRayInResults(const Ray& r);
+    void noteRenderFinished(bool result);
 
   protected:
     void paintEvent(QPaintEvent*);
     Figure* FindCollision(const Figure* f) const;
-
-    // Returns true if the ray hits the target after K reflections
-    bool RayTrace(Ray *ray, Figure* target, int K);
 
   private slots:
     void mousePressEvent(QMouseEvent * e);
@@ -67,12 +71,45 @@ class RenderingFrame : public QFrame
     Point mMousePressPos;
     Figure* mMoseEditFig;
     bool mRenderingInProgress;
-    bool mStopRendering;  // TODO: Add "Stop" button to set it.
 
     Point* mA;
     Point* mB;
-    std::vector<Figure*> mScene;  // Or a volume tree?
+    std::vector<Figure*> mScene;  // Or a volume tree? Use smart pointers?
     std::vector<Ray> mRays;
+
+    RenderingThread* mRThread;
+};
+
+
+class RenderingThread : public QThread
+{
+    Q_OBJECT
+
+  public:
+    RenderingThread(const Point* const pA, const Point* const pB,
+                    const std::vector<Figure*>& scene, int K) :
+        mA(pA), mB(pB), mScene(scene), mK(K)
+    {
+    }
+
+    ~RenderingThread()
+    {
+    }
+
+    void run();
+
+    // Returns true if the ray hits the target after K reflections
+    bool RayTrace(Ray *ray, const Figure* const target, int K);
+
+  Q_SIGNALS:
+    void sendRayInResults(const Ray& ray);
+    void sendRenderFinished(bool result);
+
+  private:
+    const Point* const mA;
+    const Point* const mB;
+    std::vector<Figure*> mScene;  // A copy of the scene. Will be modified.
+    const int mK;
 };
 
 }  // namespace

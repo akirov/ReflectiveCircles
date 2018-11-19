@@ -74,7 +74,7 @@ void ReflectiveCirclesUI::SetupUi()
 
     mKLabel = new QLabel(mCentralWidget);
     mKLabel->setObjectName(QString::fromUtf8("mKLabel"));
-    mKLabel->setGeometry(QRect(85, 182, 60, 16));
+    mKLabel->setGeometry(QRect(85, 182, 64, 16));
     mKLabel->setText(QString::fromUtf8("Reflections"));
 
     mRenderButton = new QPushButton(mCentralWidget);
@@ -82,9 +82,14 @@ void ReflectiveCirclesUI::SetupUi()
     mRenderButton->setGeometry(QRect(20, 270, 93, 28));
     mRenderButton->setText(QString::fromUtf8("Find Path"));
 
+    mStopButton = new QPushButton(mCentralWidget);
+    mStopButton->setObjectName(QString::fromUtf8("mStopButton"));
+    mStopButton->setGeometry(QRect(20, 320, 93, 28));
+    mStopButton->setText(QString::fromUtf8("Stop"));
+
     mClearButton = new QPushButton(mCentralWidget);
     mClearButton->setObjectName(QString::fromUtf8("mClearButton"));
-    mClearButton->setGeometry(QRect(20, 320, 93, 28));
+    mClearButton->setGeometry(QRect(20, 370, 93, 28));
     mClearButton->setText(QString::fromUtf8("Reset"));
 
     mOptionsLabel = new QLabel(mCentralWidget);
@@ -116,7 +121,7 @@ void ReflectiveCirclesUI::SetupUi()
 
 void ReflectiveCirclesUI::CreateActions()
 {
-    mFileOpen = new QAction(tr("&Open"), this);
+    mFileOpen = new QAction(tr("&Load"), this);
     connect(mFileOpen, SIGNAL(triggered()), this, SLOT(LoadScene()));
 
     mFileSave = new QAction(tr("&Save"), this);
@@ -183,10 +188,23 @@ void ReflectiveCirclesUI::on_mRenderButton_clicked()
     if ( ! mRenderFrame->CheckInput() )
         return;
 
-    // Render scene. TODO: Start rendering in a separate thread.
-    mRenderFrame->Render();
+    // TODO: Disable scene controls? Need to re-enable them in render finish callback...
 
-    mRenderFrame->update();
+    // Render scene
+    mRenderFrame->Render();
+}
+
+
+void ReflectiveCirclesUI::on_mStopButton_clicked()
+{
+    if ( ! mRenderFrame->RenderingInProgress() )
+    {
+        QMessageBox::warning(this, "ERROR", "Rendering is not in progress");
+    }
+    else
+    {
+        mRenderFrame->StopRendering();
+    }
 }
 
 

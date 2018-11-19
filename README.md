@@ -26,7 +26,8 @@ You can set the number of reflections using the "Reflections" spin box.
 You can also load a scene from the "File" menu - an example scene file
 "input.txt" is provided in the "scenes" dir. You can save the scene in a file
 using "Save" from the "File" menu. Start ray tracing with the "Find Path"
-button. "Reset" button clears the scene.
+button. "Reset" button clears the scene. Rendering is done in a separate
+thread and can be stopped with the "Stop" button.
 
 Note: The task is solved exactly only in the simplest case (no reflections). In
 the other cases it is solved approximately, casting random rays in the scene,
@@ -37,16 +38,19 @@ you may get different solutions.
 
 ToDo
 ----
-- start tracing in new threads
-- add "Stop" button to set mStopRendering flag
+- better resize policy or disable resizing
+- partial re-paint - only re-paint changed objects, if possible
 - optimize: don't calculate the distance twice - pass it from intersect() to reflect()...
+- use references instead of pointers where it is more appropriate
+- use smart pointers or stack objects where possible
 - make MAX_NUM_RAYS configurable
 - cast rays only to the figures, take clipping into account
 - replace dynamic_casts with something better
 - UI control to delete figures?
 - QML GUI?
-- use the GPU hardware (OpenGL, OpenCL)
+- use the GPU hardware (OpenGL, OpenCL), do calculations in parallel
 - optimize the closest rays to hit point B? we can start from B...
+- ability draw polygons, not only circles
 
 
 Screenshots

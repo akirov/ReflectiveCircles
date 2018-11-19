@@ -9,7 +9,7 @@
 namespace circles
 {
 
-const float EPSILON  = 0.01f;
+const float EPSILON  = 0.001f;
 const float INF_DIST = std::numeric_limits<float>::max();
 
 

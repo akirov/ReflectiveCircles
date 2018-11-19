@@ -22,7 +22,7 @@ namespace circles
 const float MIN_TARGET_SIZE      = 2.0f;
 const float MAX_TARGET_SIZE      = 4.0f;
 const float INC_TARGET_SIZE      = 1.0f;
-const unsigned long MAX_NUM_RAYS = 2000000;  // TODO: Make it configurable
+unsigned long MAX_NUM_RAYS       = 2000000;  // TODO: Make it configurable
 
 
 RenderingFrame::RenderingFrame(ReflectiveCirclesUI *ui, QWidget *parent):
@@ -32,7 +32,6 @@ RenderingFrame::RenderingFrame(ReflectiveCirclesUI *ui, QWidget *parent):
         mMousePressPos(0,0),
         mMoseEditFig(NULL),
         mRenderingInProgress(false),
-        mStopRendering(false),
         mA(NULL),
         mB(NULL),
         mScene(),
@@ -60,9 +59,9 @@ bool RenderingFrame::CheckInput() const
     }
 
 #if 0  // We don't need this condition.
-    if ( (mUI->GetK() - 1) > ((int)mScene.size() - 2) )
+    if ( mUI->GetK() > ((int)mScene.size() - 2) )
     {
-        QMessageBox::warning(mUI, "ERROR", "K-1 is bigger than the number of circles.");
+        QMessageBox::warning(mUI, "ERROR", "K is bigger than the number of circles.");
         return false;
     }
 #endif // 0
@@ -81,10 +80,14 @@ inline void ltrim( std::string & s )
 }
 
 
+// TODO: Break in several sub-functions
 void RenderingFrame::LoadScene(const char *fileName)
 {
     if ( RenderingInProgress() )
+    {
+        QMessageBox::warning(this, "ERROR", "Rendering is in progress");
         return;
+    }
 
     std::ifstream inFile;
     std::stringstream errSStr;
@@ -119,6 +122,7 @@ void RenderingFrame::LoadScene(const char *fileName)
         if ( ('\0' == s[0]) || ('#' == s[0]) )
             continue;
 
+        // TODO: generic point section?
         if ( s.substr(0,2) == "A=" )
         {
             int res = sscanf((s.substr(2)).c_str(), "%f %f", &x, &y);
@@ -376,9 +380,11 @@ void RenderingFrame::SaveScene(const char *fileName) const
 
 void RenderingFrame::paintEvent(QPaintEvent *e)
 {
-    QPainter painter(this);
+    QPainter painter(this);  // Store it in the class?
 
     painter.setRenderHint(QPainter::Antialiasing, true);  // Is this safe?
+
+    // Do we have to re-paint everything?
 
     for ( std::vector<Figure*>::const_iterator fig=mScene.begin();
           fig != mScene.end(); ++fig )
@@ -432,7 +438,10 @@ Figure* RenderingFrame::FindCollision(const Figure* fig) const
 void RenderingFrame::mousePressEvent(QMouseEvent * e)
 {
     if ( RenderingInProgress() )
+    {
+        QMessageBox::warning(this, "ERROR", "Rendering is in progress");
         return;
+    }
 
     mMousePressed = true;
     mMousePressPos = e->pos();
@@ -577,38 +586,84 @@ void RenderingFrame::Reset()
 
 void RenderingFrame::Render()
 {
-    if ( ! CheckInput() )  // Just in case.
-        return;
+    // Check if mRThread is still alive (which if we are here SHOULD not be the case)?
 
+    mRenderingInProgress = true;
+
+    mRays.clear();  // Delete the previous solutions.
+    update();
+
+    int K = mUI->GetK();
+    mRThread = new RenderingThread(mA, mB, mScene, K);
+    qRegisterMetaType<Ray>("Ray");
+    connect(mRThread, SIGNAL(sendRayInResults(Ray)), this, SLOT(addRayInResults(Ray)), Qt::QueuedConnection);
+    connect(mRThread, SIGNAL(sendRenderFinished(bool)), this, SLOT(noteRenderFinished(bool)), Qt::QueuedConnection);
+    connect(mRThread, &RenderingThread::finished, mRThread, &QObject::deleteLater);  // auto-delete
+    mRThread->start();
+}
+
+
+void RenderingFrame::addRayInResults(const Ray& r)
+{
+    mRays.push_back(r);
+#if 0  // Doesn't work
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    r.Draw(&painter);
+#else
+    update();
+#endif // 0
+}
+
+
+void RenderingFrame::noteRenderFinished(bool result)
+{
+    mRenderingInProgress = false;
+
+    if( !result )
+        QMessageBox::warning(mUI, "Info", "No solutions found");
+
+    update();
+    // Where it is safe to set mRThread to NULL?
+}
+
+
+void RenderingFrame::StopRendering()
+{
+    if( NULL != mRThread ) mRThread->requestInterruption();
+}
+
+
+/***************************** RenderingThread ********************************/
+
+
+void RenderingThread::run()
+{
     // TODO: Parse the scene and determine visible surfaces (from point A) then cast rays only to them?
 
     Circle* target=NULL;
+    bool foundSolution=false;
 
 #ifdef DEBUG
     try
 #endif // DEBUG
     {
-        mStopRendering = false;
-        mRays.clear();  // Delete the previous solutions.
 
-        int K = mUI->GetK();
-
-        if ( K == 0 )
+        if ( mK == 0 )
         {
             Ray r( *mA, *mB );  // Ray r( *mA, Vector(*mA, *mB) );
-    
-            if ( RayTrace(&r, mB, K) )
+
+            if ( (foundSolution = RayTrace(&r, mB, mK)) )
             {
-                mRays.push_back(r);
+                Q_EMIT sendRayInResults(r);
             }
+#ifdef DEBUG
             else
             {
-#ifdef DEBUG
-                mRays.push_back(r);
-#endif // DEBUG
-                QMessageBox::warning(mUI, "Info", "There is no solution");
+                Q_EMIT sendRayInResults(r);
             }
-            update();
+#endif // DEBUG
+            Q_EMIT sendRenderFinished(foundSolution);
             return;
         }
 
@@ -620,14 +675,15 @@ void RenderingFrame::Render()
             int y = ::rand()-RAND_MAX/2;
             if ( (x == 0) && (y == 0) )
                 continue;
+
             Ray r( *mA, Point(x, y) );
 
-            if ( RayTrace(&r, mB, K) )
-                mRays.push_back(r);
+            if ( (foundSolution = RayTrace(&r, mB, K)) )
+                Q_EMIT sendRayInResults(r);
         }
 
         // If no exact solution is found try to find approximate solutions.
-        if ( mRays.size() == 0 )
+        if ( ! foundSolution )
 #endif // 0
         {
             // Put mB in a circle (a target). The radius will be the precision.
@@ -653,7 +709,7 @@ void RenderingFrame::Render()
                 minTargetSize = MIN_TARGET_SIZE;
                 maxTargetSize = MAX_TARGET_SIZE;
             }
-            else if ( (maxTargetSize < MAX_TARGET_SIZE) && 
+            else if ( (maxTargetSize < MAX_TARGET_SIZE) &&
                       (maxTargetSize > MIN_TARGET_SIZE) )
             {
                 minTargetSize = MIN_TARGET_SIZE;
@@ -666,15 +722,20 @@ void RenderingFrame::Render()
             target = new Circle(*mB, minTargetSize);
             mScene.push_back(target);
 
-            while( (mRays.size() == 0) && (target->R <= maxTargetSize) )
+            while( (! foundSolution) && (! isInterruptionRequested())
+                   && (target->R <= maxTargetSize) )
             {
                 // Cast rays from A to various directions and trace them.
-                // Remember the rays hitting the target with K-1 reflections.
+                // Remember the rays hitting the target with K reflections.
                 // TODO: cast rays only to the figures.
 
 //              ::srand( ::time(NULL) );
                 for ( unsigned int i=0; i<MAX_NUM_RAYS; i++ )
                 {
+                    if( 0 == i%100 )
+                    {
+                        if( isInterruptionRequested() ) break;
+                    }
 #if 1  // Random ray.
                     int x = ::rand()-RAND_MAX/2;
                     int y = ::rand()-RAND_MAX/2;
@@ -685,31 +746,27 @@ void RenderingFrame::Render()
                     float angle = 2.0f * M_PI * i / MAX_NUM_RAYS;
                     Ray r( *mA, Vector(cos(angle), sin(angle)) );
 #endif // 0
-                    if ( RayTrace(&r, target, K) )  // TODO Do calculations in a pool of threads?
-                        mRays.push_back(r);
+                    if ( RayTrace(&r, target, mK) )  // TODO: Do calculations in a pool of threads?
+                    {
+                        Q_EMIT sendRayInResults(r);
+                        foundSolution = true;
+                    }
                 }
-
-                QApplication::processEvents();  // Reduce GUI blocking.
-                if ( mStopRendering ) break;
 
                 target->R += INC_TARGET_SIZE;  // Bigger target is easier to hit.
             }
-            
+
             // Delete the target circle.
-            DelFigure(target);
+            mScene.pop_back();  // Don't really need this - mScene is a copy.
+            delete target;
             target = NULL;
 
-            if ( mRays.size() == 0 )
+            if ( foundSolution )
             {
-                QMessageBox::warning(mUI, "Info", "No solutions found");
-            }
-            else
-            {
-                // TODO: Optimize the closest rays to hit exactly mB.
+                ;  // TODO: Optimize the closest rays to hit exactly mB?
             }
         }
 
-        update();
     }
 #ifdef DEBUG
     catch(std::runtime_error& e)
@@ -723,11 +780,13 @@ void RenderingFrame::Render()
 #endif // DEBUG
 
     if ( NULL != target )
-        DelFigure(target);
+        delete target;
+
+    Q_EMIT sendRenderFinished(foundSolution);
 }
 
 
-bool RenderingFrame::RayTrace( Ray *ray, Figure* target, int K )
+bool RenderingThread::RayTrace( Ray *ray, const Figure* const target, int K )
 {
     float dist, minDist=INF_DIST;
     Figure* firstHit=NULL;
@@ -745,7 +804,7 @@ bool RenderingFrame::RayTrace( Ray *ray, Figure* target, int K )
         {
             if ( dist < minDist )
             {
-                minDist = dist;  // TODO: pass minDist to reflect()
+                minDist = dist;  // TODO: pass minDist to Reflect()
                 firstHit = (*fig);
             }
         }

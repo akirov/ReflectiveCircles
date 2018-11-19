@@ -43,6 +43,7 @@ class ReflectiveCirclesUI : public QMainWindow
 
   private slots:
     void on_mRenderButton_clicked();
+    void on_mStopButton_clicked();
     void on_mClearButton_clicked();
     void LoadScene();
     void SaveScene();
@@ -63,6 +64,7 @@ class ReflectiveCirclesUI : public QMainWindow
     QSpinBox       *mKSpinBox;
     QLabel         *mKLabel;
     QPushButton    *mRenderButton;
+    QPushButton    *mStopButton;
     QPushButton    *mClearButton;
     QLabel         *mOptionsLabel;
     QSpinBox       *mMinRSpinBox;
