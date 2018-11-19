@@ -50,7 +50,7 @@ ToDo
 - QML GUI?
 - use the GPU hardware (OpenGL, OpenCL), do calculations in parallel
 - optimize the closest rays to hit point B? we can start from B...
-- ability draw polygons, not only circles
+- ability to draw polygons, not only circles
 
 
 Screenshots
