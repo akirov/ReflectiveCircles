@@ -44,11 +44,13 @@ ToDo
 - use references instead of pointers where it is more appropriate
 - use smart pointers or stack objects where possible
 - make MAX_NUM_RAYS configurable
-- cast rays only to the figures, take clipping into account
 - replace dynamic_casts with something better
 - UI control to delete figures?
-- QML GUI?
+- cast rays only to the figures, take clipping into account
+- think of/search for a data structure to store the figures optimized for ray tracing
+- use homogenious (4D) coordinates or OpenGL vectors?
 - use the GPU hardware (OpenGL, OpenCL), do calculations in parallel
+- write special shader function for every point on the circles to reflect the ray?
 - optimize the closest rays to hit point B? we can start from B...
 - ability to draw polygons, not only circles
 

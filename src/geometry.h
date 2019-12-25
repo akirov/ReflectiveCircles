@@ -45,6 +45,10 @@ struct Figure
     // Reflects an intersecting ray.
     virtual void Reflect( Ray* ray /*, float distance */ ) const = 0;
 
+    // Add Scale(minX, minY, scale, margin) method?
+
+    // Add Serialize(ostream) method?
+
     // Add enum Type and GetType() method?
 };
 

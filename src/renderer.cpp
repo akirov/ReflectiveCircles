@@ -288,6 +288,7 @@ void RenderingFrame::LoadScene(const char *fileName)
         for ( std::vector<Figure*>::iterator fig=mScene.begin();
               fig != mScene.end(); ++fig )
         {
+            // TODO Replace dynamic_cast<> with virtual Scale() call
             Point *ptp = dynamic_cast<Point*>(*fig);
             if ( NULL != ptp )
             {
@@ -341,6 +342,7 @@ void RenderingFrame::SaveScene(const char *fileName) const
     for ( std::vector<Figure*>::const_iterator fig=mScene.begin();
           fig != mScene.end(); ++fig )
     {
+        // TODO Replace dynamic_cast<> with virtual Serialize() call
         const Point *pt = dynamic_cast<const Point*>(*fig);
         if ( NULL != pt )
         {
@@ -392,6 +394,7 @@ void RenderingFrame::paintEvent(QPaintEvent *e)
         (*fig)->Draw(&painter);
     }
 
+    // May need mutex protection if using DirectConnection with RenderingThread!
     for ( std::vector<Ray>::const_iterator iray=mRays.begin();
           iray != mRays.end(); ++iray )
     {
@@ -611,6 +614,7 @@ void RenderingFrame::addRayInResults(const Ray& r)
     painter.setRenderHint(QPainter::Antialiasing, true);
     r.Draw(&painter);
 #else
+    // May not be thread safe if using DirectConnection!
     update();
 #endif // 0
 }
